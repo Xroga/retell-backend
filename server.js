@@ -11,24 +11,24 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Get current directory path
+// Get current directory path
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Serve static frontend files
+// Serve static files from public folder
 app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Serve index.html explicitly on root
+// Serve index.html explicitly on root
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// ✅ Health check
+// Health check
 app.get("/health", (req, res) => {
   res.send("✅ RetellAI Backend is running...");
 });
 
-// ✅ Start a new Web Call session with Retell
+// Start a new Web Call session
 app.post("/start-call", async (req, res) => {
   try {
     const { agent_id } = req.body;
@@ -44,7 +44,7 @@ app.post("/start-call", async (req, res) => {
   }
 });
 
-// ✅ Send audio chunk to Retell
+// Send audio chunk
 app.post("/send-audio", async (req, res) => {
   try {
     const { call_id, audio_base64 } = req.body;
@@ -60,7 +60,7 @@ app.post("/send-audio", async (req, res) => {
   }
 });
 
-// ✅ Get AI response (audio + transcript)
+// Get AI response
 app.get("/get-response/:call_id", async (req, res) => {
   try {
     const { call_id } = req.params;
@@ -75,7 +75,8 @@ app.get("/get-response/:call_id", async (req, res) => {
   }
 });
 
-// ✅ Start server
-app.listen(process.env.PORT, () => {
-  console.log(`🚀 RetellAI backend running on port ${process.env.PORT}`);
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 RetellAI backend running on port ${PORT}`);
 });
