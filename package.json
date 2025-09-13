@@ -1,0 +1,16 @@
+async function startCall() {
+  // 1. Start call
+  const res = await fetch("http://localhost:5000/start-call", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ agent_id: "your_agent_id_here" }),
+  });
+
+  const data = await res.json();
+  const callId = data.call_id; // save for later
+
+  console.log("Call started:", callId);
+
+  // 2. Capture mic, send audio chunks to backend → /send-audio
+  // 3. Poll backend → /get-response/:callId → play AI audio + show transcript
+}
