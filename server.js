@@ -10,6 +10,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ✅ serve frontend
+app.use(express.static("public"));
+
 // ✅ Health check
 app.get("/", (req, res) => {
   res.send("✅ RetellAI Backend is running...");
