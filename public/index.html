@@ -330,8 +330,8 @@
       AGENT_ID = "agent_XXXX"
 */
 
-const SERVER_BASE = ""; // OPTIONAL: if using your backend proxy (e.g. https://retell-backend.vercel.app)
-const AGENT_ID = "";     // OPTIONAL: your Retell agent id (if using direct realtime ws replace below)
+const SERVER_BASE = window.location.origin;  // auto points to your backend (same Vercel project)
+const AGENT_ID = "agent_58f0534d675f68827aa932c9db"; // replace with your Retell Agent ID
 const startBtn = document.getElementById('startBtn');
 const stopBtn  = document.getElementById('stopBtn');
 const endBtn   = document.getElementById('endBtn');
