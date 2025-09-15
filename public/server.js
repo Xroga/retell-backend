@@ -1,112 +1,57 @@
 // server.js
 import express from "express";
-import cors from "cors";
-import axios from "axios";
+import fetch from "node-fetch";
 import dotenv from "dotenv";
+import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 
 dotenv.config();
-
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Get current directory path
+// Path helpers for static frontend
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Serve static frontend files from /public
+// Serve frontend (index.html in public/)
 app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Serve index.html explicitly on root
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-// ✅ Health check
-app.get("/health", (req, res) => {
-  res.send("✅ RetellAI Backend is running...");
-});
-
-// ✅ Start a new Web Call session with RetellAI
+// Retell: Start a call
 app.post("/start-call", async (req, res) => {
   try {
     const { agent_id } = req.body;
-    const AGENT_ID = agent_id || process.env.RETELL_AGENT_ID;
-
-    if (!AGENT_ID) {
+    if (!agent_id) {
       return res.status(400).json({ error: "Missing agent_id" });
     }
 
-    const response = await axios.post(
-      "https://api.retellai.com/v2/web-call",
-      { agent_id: AGENT_ID },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.RETELL_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    // Call Retell API
+    const response = await fetch("https://api.retellai.com/v2/calls", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.RETELL_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ agent_id }),
+    });
 
-    res.json(response.data);
-  } catch (error) {
-    console.error("❌ Error starting RetellAI call:", error.response?.data || error.message);
-    res.status(500).json({ error: "Failed to start call" });
-  }
-});
-
-// ✅ Send audio chunk to RetellAI
-app.post("/send-audio", async (req, res) => {
-  try {
-    const { call_id, audio_base64 } = req.body;
-
-    if (!call_id || !audio_base64) {
-      return res.status(400).json({ error: "Missing call_id or audio_base64" });
+    const data = await response.json();
+    if (!response.ok) {
+      return res.status(response.status).json(data);
     }
 
-    const response = await axios.post(
-      `https://api.retellai.com/v2/web-call/${call_id}/audio`,
-      { audio_base64 },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.RETELL_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    res.json(response.data);
-  } catch (error) {
-    console.error("❌ Error sending audio:", error.response?.data || error.message);
-    res.status(500).json({ error: "Failed to send audio" });
+    res.json(data); // includes ws_url
+  } catch (err) {
+    console.error("Error starting call:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
-// ✅ Get AI response (audio + transcript)
-app.get("/get-response/:call_id", async (req, res) => {
-  try {
-    const { call_id } = req.params;
-
-    const response = await axios.get(
-      `https://api.retellai.com/v2/web-call/${call_id}/response`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.RETELL_API_KEY}`,
-        },
-      }
-    );
-
-    res.json(response.data);
-  } catch (error) {
-    console.error("❌ Error fetching response:", error.response?.data || error.message);
-    res.status(500).json({ error: "Failed to fetch response" });
-  }
-});
-
-// ✅ Start server (use Vercel PORT or 5000 locally)
+// Run locally or let Vercel handle exports
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 RetellAI backend running at http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+}
+
+export default app; // for Vercel
