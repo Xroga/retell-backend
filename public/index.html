@@ -5,590 +5,479 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>DrJoy — AI Voice Agent (Demo)</title>
 <style>
-  /* --------------------
-     WEB3 GLASSMORPHIC THEME
-     Single-file modern responsive layout
-     -------------------- */
-  :root{
-    --bg:#07090a;                 /* page background */
-    --panel:#0f1416;              /* panel base */
-    --glass: rgba(255,255,255,0.04);
-    --glass-2: rgba(255,255,255,0.02);
-    --neon:#00f27a;               /* main neon */
-    --neon-2:#00a0ff;             /* accent neon */
-    --muted:#9aa3a6;
-    --white:#e9f7f0;
-    --card-radius:18px;
-    --accent-grad: linear-gradient(135deg,var(--neon) 0%, #00d48e 45%, var(--neon-2) 100%);
-    --glass-border: 1px solid rgba(255,255,255,0.03);
-    --max-width:1100px;
-    --shadow: 0 12px 50px rgba(0,0,0,0.6);
-    --ease: cubic-bezier(.2,.9,.2,1);
-  }
+:root{
+  --bg:#07090a;
+  --panel:#0f1416;
+  --neon:#00f27a;
+  --neon-2:#00a0ff;
+  --muted:#9aa3a6;
+  --white:#e9f7f0;
+  --card-radius:16px;
+  --shadow:0 8px 32px rgba(0,0,0,.6);
+  --ease:cubic-bezier(.2,.9,.2,1);
+}
 
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
-  body{
-    min-height:100vh;
-    background:
-      radial-gradient(800px 400px at 10% 18%, rgba(0,242,122,0.05), transparent 8%),
-      radial-gradient(700px 330px at 92% 82%, rgba(0,160,255,0.03), transparent 8%),
-      var(--bg);
-    color:var(--white);
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    display:flex;
-    align-items:flex-start;
-    justify-content:center;
-    padding:32px 18px;
-  }
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,system-ui,Arial;
+  background:var(--bg);
+  color:var(--white);
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  min-height:100vh;
+  padding:20px;
+}
+.stage{width:100%;max-width:860px;display:flex;flex-direction:column;gap:20px}
 
-  .stage{
-    width:100%;
-    max-width:var(--max-width);
-    display:flex;
-    flex-direction:column;
-    gap:28px;
-    align-items:stretch;
-  }
+.panel{
+  display:flex;flex-direction:column;
+  background:rgba(255,255,255,.02);
+  border-radius:var(--card-radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
 
-  /* MAIN DEMO PANEL */
-  .panel {
-    display:grid;
-    grid-template-columns: 420px 1fr;
-    gap:0;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border-radius:var(--card-radius);
-    padding:20px;
-    box-shadow:var(--shadow);
-    border:var(--glass-border);
-    overflow:hidden;
-    transition:transform .6s var(--ease);
-    transform-origin:center;
-    backdrop-filter: blur(10px) saturate(120%);
-  }
+.header{
+  padding:16px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(255,255,255,.02)
+}
+.brand{display:flex;align-items:center;gap:12px}
+.badge{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--neon),var(--neon-2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#021012}
 
-  /* left column */
-  .left {
-    padding:26px;
-    display:flex;
-    flex-direction:column;
-    gap:18px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
-  }
-  .brand {
-    display:flex;
-    gap:14px;
-    align-items:center;
-  }
-  .badge {
-    width:62px;height:62px;border-radius:14px;
-    background:var(--accent-grad);
-    display:flex;align-items:center;justify-content:center;font-weight:800;color:#021012;
-    font-size:22px; transform: rotate(-6deg);
-    box-shadow: 0 12px 40px rgba(0,242,122,0.08);
-  }
-  .title h1{margin:0;font-size:20px;letter-spacing:-0.2px}
-  .title p{margin:0;color:var(--muted);font-size:13px}
+.offer{font-size:13px;color:var(--neon)}
 
-  .offer {
-    margin-top:6px;
-    padding:12px;border-radius:12px;
-    background: linear-gradient(135deg, rgba(0,242,122,0.12), rgba(0,160,255,0.06));
-    font-weight:700;color:var(--white);font-size:13px;
-    display:inline-block;
-    box-shadow:0 6px 24px rgba(0,242,122,0.06);
-  }
+.body{padding:18px;display:flex;flex-direction:column;gap:16px}
+.status{display:flex;align-items:center;justify-content:space-between}
+.dot{width:12px;height:12px;border-radius:50%;background:#444}
+.dot.live{background:var(--neon);box-shadow:0 0 12px var(--neon)}
+.timer{font-weight:700;color:var(--neon)}
 
-  .panel-card{
-    margin-top:6px;padding:12px;border-radius:12px;background:var(--glass);border:1px solid rgba(255,255,255,0.02);
-    color:var(--muted); font-size:14px;
-  }
+.wave{display:flex;gap:6px;height:50px;align-items:flex-end;margin-top:12px}
+.bar{width:6px;background:linear-gradient(180deg,var(--neon),#00b86b);border-radius:6px;animation:wiggle .9s infinite ease-in-out}
+.bar:nth-child(2){animation-duration:.6s;height:40px}
+.bar:nth-child(3){animation-duration:.7s;height:20px}
+.bar:nth-child(4){animation-duration:.5s;height:55px}
+.bar:nth-child(5){animation-duration:.8s;height:28px}
+@keyframes wiggle{0%{transform:scaleY(.3)}50%{transform:scaleY(1.2)}100%{transform:scaleY(.4)}}
 
-  .status-row{display:flex;align-items:center;gap:10px}
-  .dot {
-    width:12px;height:12px;border-radius:50%;
-    background: rgba(255,255,255,0.04);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
-  }
-  .dot.live{ background: linear-gradient(180deg,var(--neon), #00b86b); box-shadow:0 6px 18px rgba(0,242,122,0.12); }
+.controls{display:flex;gap:10px;flex-wrap:wrap}
+.btn{padding:8px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer;transition:transform .1s}
+.btn:active{transform:scale(.96)}
+.btn.green{background:linear-gradient(90deg,var(--neon),var(--neon-2));color:#021012}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--white)}
 
-  .wave-wrap{margin-top:12px}
-  .wave { width:100%;height:70px;border-radius:10px;padding:10px;display:flex;align-items:flex-end;gap:8px;overflow:hidden;background:linear-gradient(90deg, rgba(255,255,255,0.01), transparent); }
-  .bar { width:8px;border-radius:6px; background: linear-gradient(180deg,var(--neon), #00b86b); transform-origin:center bottom; animation:wiggle 900ms infinite linear; }
-  .bar.n2{ animation-duration:680ms; height:42px }
-  .bar.n3{ animation-duration:760ms; height:22px }
-  .bar.n4{ animation-duration:540ms; height:56px }
-  .bar.n5{ animation-duration:870ms; height:30px }
-  @keyframes wiggle{0%{transform:scaleY(.25)}50%{transform:scaleY(1.3)}100%{transform:scaleY(.35)}}
+.transcript{background:rgba(0,0,0,.25);border-radius:12px;padding:12px;min-height:180px;overflow:auto}
+.bubble{margin-bottom:10px;padding:10px;border-radius:10px;max-width:80%}
+.bubble.user{background:rgba(255,255,255,.08);align-self:flex-end;color:var(--muted)}
+.bubble.ai{background:rgba(0,242,122,.1);color:var(--white);font-weight:600;align-self:flex-start}
 
-  .controls { display:flex;gap:10px;flex-wrap:wrap;margin-top:14px; }
-  .btn {
-    border-radius:12px;padding:10px 16px;font-weight:700;cursor:pointer;border:none;
-    display:inline-flex;align-items:center;gap:10px;transition:transform .12s var(--ease);
-  }
-  .btn:active{transform:translateY(1px)}
-  .btn.primary{ background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); border: 1px solid rgba(255,255,255,0.04); color:var(--white); box-shadow:0 10px 30px rgba(0,242,122,0.12); }
-  .btn.green{ background: var(--accent-grad); color:#021012; }
-  .btn.ghost{ background:transparent;border:1px solid rgba(255,255,255,0.06); color:var(--neon); }
+.footer{text-align:center;font-size:12px;color:var(--muted);margin-top:10px}
 
-  .small { font-size:13px;color:var(--muted); margin-top:8px }
-
-  /* right column */
-  .right { padding:22px 26px; display:flex;flex-direction:column; gap:14px; background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); }
-  .meta { display:flex;justify-content:space-between;align-items:center;gap:12px; }
-  .meta .info { color:var(--muted); font-size:13px; }
-  .meta .time { font-weight:800; color:var(--neon); font-size:13px; }
-
-  .transcript {
-    background: rgba(0,0,0,0.12);
-    border-radius:14px;
-    padding:14px;
-    min-height:260px;
-    overflow:auto;
-    border:1px solid rgba(255,255,255,0.02);
-  }
-  .bubble { margin-bottom:12px;padding:12px;border-radius:12px;max-width:78%;line-height:1.45; }
-  .bubble.user { background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); align-self:flex-end;color:var(--muted); }
-  .bubble.ai { background: linear-gradient(90deg, rgba(0,242,122,0.08), rgba(0,160,255,0.02)); color:#021012; font-weight:700; align-self:flex-start; }
-
-  .footer-row { display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:13px; margin-top:8px; }
-
-  /* AFTER DEMO / INFO */
-  .after {
-    margin-top:18px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
-    border-radius:16px; padding:24px; border:1px solid rgba(255,255,255,0.02);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.45);
-  }
-  .grid {
-    display:grid; grid-template-columns: repeat(3,1fr); gap:18px;
-  }
-  .card {
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-  }
-  .card h3{margin:0 0 8px 0;color:var(--neon)}
-  .cta {
-    margin-top:18px;padding:16px;border-radius:12px;text-align:center;background:var(--accent-grad);color:#021012;font-weight:800;box-shadow:0 12px 36px rgba(0,242,122,0.12);
-  }
-
-  /* FAQ / long copy */
-  .faq { margin-top:18px; display:flex; flex-direction:column; gap:10px; }
-  .faq .q{ font-weight:800;color:var(--neon); margin-bottom:6px; }
-  .faq p{ color:var(--muted); margin:0 0 12px 0; line-height:1.6; }
-
-  /* responsive tweaks */
-  @media (max-width:980px){
-    .panel{ grid-template-columns: 1fr; padding:18px; }
-    .grid{ grid-template-columns: 1fr; }
-  }
-  @media (max-width:520px){
-    .badge{width:48px;height:48px;font-size:18px}
-    .panel{ border-radius:14px; padding:12px;}
-    .wave{height:56px}
-    .transcript{min-height:180px}
-  }
+@media(max-width:600px){
+  .header{flex-direction:column;gap:10px}
+}
 </style>
 </head>
 <body>
-  <div class="stage">
-
-    <!-- TOP: DEMO PANEL -->
-    <main class="panel" role="main" aria-label="DrJoy Voice Agent Demo">
-      <!-- LEFT -->
-      <section class="left" aria-label="controls and info">
-        <div class="brand">
-          <div class="badge">DJ</div>
-          <div class="title">
-            <h1>DrJoy — Voice Agent</h1>
-            <p>White-label voice receptionist for clinics</p>
-          </div>
-        </div>
-
-        <div class="offer">🎁 <strong>14-Day Free Trial</strong> — 100 demo minutes included</div>
-
-        <div class="panel-card">
-          <div class="status-row">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <span class="dot live" id="liveDot"></span>
-              <strong id="liveText">Live Connected</strong>
-            </div>
-            <div style="text-align:right">
-              <div style="font-size:12px;color:var(--muted)">Demo Time Left</div>
-              <div style="font-weight:800;color:var(--neon)" id="minutesLeft">01:40:00</div>
-            </div>
-          </div>
-
-          <div class="wave-wrap">
-            <div class="wave" id="waveform" aria-hidden="true">
-              <div class="bar n1" style="height:30px"></div>
-              <div class="bar n2" style="height:42px"></div>
-              <div class="bar n3" style="height:22px"></div>
-              <div class="bar n4" style="height:56px"></div>
-              <div class="bar n5" style="height:30px"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="controls" role="toolbar" aria-label="call controls">
-          <button class="btn green" id="startBtn" title="Start call">🎙 Start</button>
-          <button class="btn primary" id="stopBtn" title="Stop sending audio">■ Stop</button>
-          <button class="btn ghost" id="endBtn" title="End call">✖ End</button>
-          <button class="btn ghost" id="muteBtn" title="Mute / Unmute">🔇 Mute</button>
-        </div>
-
-        <div class="small">
-          Use Chrome or Edge for best microphone support. Allow mic permission when prompted.
-        </div>
-      </section>
-
-      <!-- RIGHT -->
-      <aside class="right" aria-label="transcript and logs">
-        <div class="meta">
-          <div class="info">Transcript (real-time)</div>
-          <div class="time" id="timer">00:00</div>
-        </div>
-
-        <div id="transcript" class="transcript" role="log" aria-live="polite">
-          <!-- demo messages will appear here -->
-          <div class="bubble ai">👋 Hello — press Start and speak. The agent will answer by voice.</div>
-        </div>
-
-        <div class="footer-row" aria-hidden="false">
-          <div>Powered by <strong>DrJoy Voice Agent</strong></div>
-          <div id="connectionStatus">🔴 Disconnected</div>
-        </div>
-      </aside>
-    </main>
-
-    <!-- AFTER DEMO / INFO BLOCKS -->
-    <section class="after">
-      <div style="display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap">
-        <div style="flex:1;min-width:260px">
-          <h2 style="margin:0 0 8px 0;color:var(--neon)">Why choose DrJoy?</h2>
-          <p style="color:var(--muted);margin:0 0 12px 0">Human-like voice, 24/7 coverage, appointment handling and call transfers — white labeled for your clinic.</p>
-          <div class="card">
-            <h3>Use Cases</h3>
-            <ul style="padding-left:18px;margin:8px 0 0 0;color:var(--muted)">
-              <li>Dental & Cosmetic Clinics — scheduling & FAQ</li>
-              <li>After-hours reception — capture leads</li>
-              <li>Multi-language support & analytics</li>
-            </ul>
-          </div>
-        </div>
-
-        <div style="flex:2;min-width:300px">
-          <div class="grid">
-            <div class="card">
-              <h3>What You Get</h3>
-              <p style="color:var(--muted)">Custom script, voice tuning, CRM integration, reporting dashboards, and HIPAA-level security options.</p>
-            </div>
-            <div class="card">
-              <h3>After the Demo</h3>
-              <p style="color:var(--muted)">We help you: customize flow, integrate calendar/CRM, set up forwarding & train the agent with your FAQs.</p>
-            </div>
-            <div class="card">
-              <h3>Pricing & Trials</h3>
-              <p style="color:var(--muted)">Flexible pay-as-you-go. Demo minutes included. Enterprise plans available for large clinics.</p>
-            </div>
-          </div>
-        </div>
+<div class="stage">
+  <div class="panel">
+    <div class="header">
+      <div class="brand"><div class="badge">DJ</div><div><strong>DrJoy Voice Agent</strong></div></div>
+      <div class="offer">🎁 14-Day Free Trial</div>
+    </div>
+    <div class="body">
+      <div class="status">
+        <div><span class="dot live" id="dot"></span> <span id="status">Live</span></div>
+        <div class="timer" id="timeLeft">01:40:00</div>
       </div>
-
-      <div style="margin-top:18px" class="faq">
-        <div>
-          <div class="q">Q: How natural does the voice sound?</div>
-          <p>A: Uses modern speech models with intonation control — designed to feel human and friendly.</p>
-        </div>
-        <div>
-          <div class="q">Q: Can it forward calls to staff?</div>
-          <p>A: Yes — transfer any call to a live receptionist or specified phone/URL.</p>
-        </div>
-        <div>
-          <div class="q">Q: Is patient data secure?</div>
-          <p>A: Conversations are encrypted in transit. We support compliance options (HIPAA/GDPR) via integrations.</p>
-        </div>
+      <div class="wave"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+      <div class="controls">
+        <button class="btn green" id="startBtn">🎙 Start</button>
+        <button class="btn ghost" id="stopBtn">■ Stop</button>
+        <button class="btn ghost" id="endBtn">✖ End</button>
+        <button class="btn ghost" id="muteBtn">🔇 Mute</button>
       </div>
-
-      <div class="cta">🚀 Want to activate your own AI Voice Agent? Contact us to start your trial.</div>
-    </section>
-
-    <footer style="text-align:center;color:var(--muted);margin-top:12px">
-      © 2025 DrJoy — White-label AI Reception for Clinics.
-    </footer>
+      <div class="transcript" id="transcript">
+        <div class="bubble ai">👋 Hello — press Start to begin.</div>
+      </div>
+    </div>
   </div>
+  <div class="footer">© 2025 DrJoy — White-label AI Reception</div>
+</div>
 
 <script>
-/*
-  Single-file JS:
-  - Demo simulation by default (safe for demo)
-  - Replace START logic to connect to your backend/Retell websocket when ready
-  - Placeholders:
-      SERVER_BASE = "https://your-backend.example.com" (no trailing slash)
-      AGENT_ID = "agent_XXXX"
-*/
+const AGENT_ID = "agent_58f0534d675f68827aa932c9db"; // replace with yours
+const transcript=document.getElementById("transcript");
+const status=document.getElementById("status");
+const timeLeft=document.getElementById("timeLeft");
+const startBtn=document.getElementById("startBtn");
+const stopBtn=document.getElementById("stopBtn");
+const endBtn=document.getElementById("endBtn");
+const muteBtn=document.getElementById("muteBtn");
 
-const SERVER_BASE = window.location.origin;  // auto points to your backend (same Vercel project)
-const AGENT_ID = "agent_58f0534d675f68827aa932c9db"; // replace with your Retell Agent ID
-const startBtn = document.getElementById('startBtn');
-const stopBtn  = document.getElementById('stopBtn');
-const endBtn   = document.getElementById('endBtn');
-const muteBtn  = document.getElementById('muteBtn');
-const transcript = document.getElementById('transcript');
-const statusText = document.getElementById('connectionStatus');
-const liveText = document.getElementById('liveText');
-const liveDot = document.getElementById('liveDot');
-const minutesLeftEl = document.getElementById('minutesLeft');
-const timerEl = document.getElementById('timer');
-const waveform = document.getElementById('waveform');
+let ws=null,localStream=null,audioCtx=null,processor=null;
+let countdown=null,endTime=null,pausedTime=null;
 
-let ws = null;
-let localStream = null;
-let audioCtx = null;
-let processor = null;
-let startTs = null;
-let timerInterval = null;
-let demoInterval = null;
-let remainingSeconds = 100 * 60; // default 100 minutes for demo
-
-// UTIL: add bubble
-function addBubble(text, who='ai'){
-  const d = document.createElement('div');
-  d.className = 'bubble ' + (who==='user' ? 'user' : 'ai');
-  d.textContent = text;
-  transcript.appendChild(d);
-  transcript.scrollTop = transcript.scrollHeight;
+// restore timer state from localStorage
+if(localStorage.state){
+  const saved=JSON.parse(localStorage.state);
+  endTime=saved.endTime||null;
+  pausedTime=saved.pausedTime||null;
+  if(endTime && !pausedTime) startCountdown(); // running
+  if(pausedTime) timeLeft.textContent=formatTime(pausedTime); // stopped
 }
 
-// UTIL: update remaining display (HH:MM:SS)
-function formatHHMMSS(s){
-  const h = String(Math.floor(s/3600)).padStart(2,'0');
-  const m = String(Math.floor((s%3600)/60)).padStart(2,'0');
-  const sec = String(s%60).padStart(2,'0');
+function addBubble(text,who="ai"){
+  const d=document.createElement("div");
+  d.className="bubble "+who;
+  d.textContent=text;
+  transcript.appendChild(d);
+  transcript.scrollTop=transcript.scrollHeight;
+}
+
+function formatTime(ms){
+  const s=Math.max(0,Math.floor(ms/1000));
+  const h=String(Math.floor(s/3600)).padStart(2,"0");
+  const m=String(Math.floor((s%3600)/60)).padStart(2,"0");
+  const sec=String(s%60).padStart(2,"0");
   return `${h}:${m}:${sec}`;
 }
-function updateRemaining(){
-  minutesLeftEl.textContent = formatHHMMSS(remainingSeconds);
+
+function saveState(){
+  localStorage.state=JSON.stringify({endTime,pausedTime});
 }
 
-// timer
-function startTimer(){
-  startTs = Date.now();
-  timerInterval = setInterval(()=>{
-    const elapsed = Math.floor((Date.now()-startTs)/1000);
-    timerEl.textContent = formatHHMMSS(elapsed);
-    if (remainingSeconds > 0) remainingSeconds--;
-    updateRemaining();
+function startCountdown(){
+  if(!endTime) endTime=Date.now()+100*60*1000; // 100 mins
+  pausedTime=null;
+  saveState();
+  if(countdown) clearInterval(countdown);
+  countdown=setInterval(()=>{
+    const remain=endTime-Date.now();
+    if(remain<=0){
+      clearInterval(countdown);
+      countdown=null;
+      endTime=null;
+      pausedTime=null;
+      localStorage.removeItem("state");
+      timeLeft.textContent="00:00:00";
+    } else {
+      timeLeft.textContent=formatTime(remain);
+    }
   },1000);
 }
-function stopTimer(){
-  clearInterval(timerInterval);
-  timerEl.textContent = '00:00';
-}
 
-// waveform simple animator (visual only)
-function startWave(){
-  const bars = waveform.querySelectorAll('.bar');
-  bars.forEach((b, i) => b.style.animationPlayState = 'running');
-}
-function stopWave(){
-  const bars = waveform.querySelectorAll('.bar');
-  bars.forEach((b)=> b.style.animationPlayState = 'paused');
-}
-
-// SAFE demo simulation (no keys). Good for presentation.
-function runLocalDemo(){
-  statusText.textContent = '🟢 Demo connected (simulation)';
-  liveText.textContent = 'Demo Running';
-  liveDot.classList.add('live');
-  startTimer();
-  startWave();
-
-  // simple scripted chat
-  const msgs = [
-    {who:'ai', text:'👋 Hello, this is DrJoy. How can I help you today?'},
-    {who:'user', text:'I need to book a dental cleaning.'},
-    {who:'ai', text:'Sure — which day would you prefer?'},
-    {who:'user', text:'Tomorrow afternoon if possible.'},
-    {who:'ai', text:'All set. I have scheduled you for 3:30 PM tomorrow.'},
-    {who:'ai', text:'Would you like a reminder text the day before?'}
-  ];
-  let i = 0;
-  demoInterval = setInterval(()=>{
-    if(i < msgs.length){
-      addBubble(msgs[i].text, msgs[i].who);
-      i++;
-    } else {
-      clearInterval(demoInterval);
-      // keep connection status active until user ends
-    }
-  }, 1800);
-}
-
-// CLEAN STOP demo
-function stopLocalDemo(){
-  clearInterval(demoInterval);
-  stopTimer();
-  stopWave();
-  statusText.textContent = '🔴 Demo paused';
-  liveText.textContent = 'Paused';
-  liveDot.classList.remove('live');
-}
-
-// Attempt to start REAL websocket to Retell (OPTIONAL)
-async function startRealtime() {
-  // NOTE: connecting directly to Retell's websocket from browser exposes keys.
-  // Recommended: use your Vercel backend as a secure proxy that stores RETELL_API_KEY server-side.
-  // If you have a server endpoint that returns a call/session URL or token, call it here.
-  if (!SERVER_BASE || !AGENT_ID) {
-    // fallback to safe local demo if backend not configured
-    runLocalDemo();
-    return;
+function pauseCountdown(){
+  if(countdown){ clearInterval(countdown); countdown=null; }
+  if(endTime){
+    pausedTime=endTime-Date.now();
+    endTime=null;
+    timeLeft.textContent=formatTime(pausedTime);
+    saveState();
   }
+}
 
-  try {
-    statusText.textContent = '🟡 Connecting to backend...';
-    // Example flow: create call via backend, then open WS to returned ws_url
-    // 1) POST /start-call { agent_id }  -> response { call_id, ws_url OR call_token }
-    const res = await fetch(`${SERVER_BASE}/start-call`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ agent_id: AGENT_ID })
-    });
-    if (!res.ok) throw new Error('Failed to start call');
-    const data = await res.json();
-    // backend should return a websocket URL (ws_url) or call_id + token
-    const wsUrl = data.ws_url || data.websocket_url;
-    if(!wsUrl) {
-      // if backend returns call_id, you might need to open a known retell ws endpoint with token
-      // For now: fallback
-      runLocalDemo();
-      return;
-    }
+function resumeCountdown(){
+  if(pausedTime){
+    endTime=Date.now()+pausedTime;
+    pausedTime=null;
+    saveState();
+    startCountdown();
+  }
+}
 
-    // open ws
-    ws = new WebSocket(wsUrl);
-    ws.binaryType = 'arraybuffer';
-    ws.onopen = () => {
-      statusText.textContent = '🟢 Connected';
-      liveText.textContent = 'Live';
-      liveDot.classList.add('live');
-      startTimer();
-      startWave();
-      addBubble('Connection established. Say hello!', 'ai');
-    };
-    ws.onmessage = (ev) => {
-      try {
-        const msg = JSON.parse(ev.data);
-        // adapt to Retell message types — examples:
-        if(msg.type === 'transcript.final') addBubble(msg.text, 'user');
-        if(msg.type === 'response.output_text.delta') addBubble(msg.delta, 'ai');
-        if(msg.type === 'response.finished') addBubble('[ai audio finished]','ai');
-      } catch(e){ console.warn('ws msg parse', e); }
-    };
-    ws.onclose = () => {
-      statusText.textContent = '🔴 Disconnected';
-      liveDot.classList.remove('live');
-      stopTimer();
-      stopWave();
-    };
-
-    // microphone capture & streaming bytes over ws (example PCM16LE)
-    localStream = await navigator.mediaDevices.getUserMedia({ audio:true });
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const src = audioCtx.createMediaStreamSource(localStream);
-    processor = audioCtx.createScriptProcessor(2048, 1, 1);
-    processor.onaudioprocess = (e) => {
-      if (!ws || ws.readyState !== 1) return;
-      const input = e.inputBuffer.getChannelData(0);
-      // convert Float32 to 16-bit PCM
-      const buffer = new ArrayBuffer(input.length * 2);
-      const view = new DataView(buffer);
-      let offset = 0;
-      for (let i = 0; i < input.length; i++, offset += 2) {
-        let s = Math.max(-1, Math.min(1, input[i]));
-        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+async function startRealtime(){
+  try{
+    status.textContent="🟡 Connecting...";
+    const res=await fetch("/api/start-call",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({agent_id:AGENT_ID})});
+    const data=await res.json();
+    ws=new WebSocket(data.ws_url||data.websocket_url);
+    ws.binaryType="arraybuffer";
+    ws.onopen=()=>{status.textContent="🟢 Connected";addBubble("Connected to Retell","ai");};
+    ws.onmessage=(ev)=>{try{const msg=JSON.parse(ev.data);
+      if(msg.type==="transcript.final") addBubble(msg.text,"user");
+      if(msg.type==="response.output_text.delta") addBubble(msg.delta,"ai");
+    }catch(e){}};
+    ws.onclose=()=>{status.textContent="🔴 Disconnected";};
+    localStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    const src=audioCtx.createMediaStreamSource(localStream);
+    processor=audioCtx.createScriptProcessor(2048,1,1);
+    processor.onaudioprocess=(e)=>{
+      if(!ws||ws.readyState!==1)return;
+      const input=e.inputBuffer.getChannelData(0);
+      const buffer=new ArrayBuffer(input.length*2);
+      const view=new DataView(buffer);
+      for(let i=0;i<input.length;i++){
+        let s=Math.max(-1,Math.min(1,input[i]));
+        view.setInt16(i*2,s<0?s*0x8000:s*0x7fff,true);
       }
       ws.send(buffer);
     };
-    src.connect(processor);
-    processor.connect(audioCtx.destination);
-
-  } catch (err){
-    console.error(err);
-    // fallback/demo mode
-    runLocalDemo();
-  }
+    src.connect(processor);processor.connect(audioCtx.destination);
+  }catch(e){console.error(e);addBubble("⚠️ Backend failed","ai");}
 }
 
-// STOP real or demo
 function stopAll(){
-  // stop websocket and mic
-  if (ws){ try{ ws.close(); } catch(e){} ws = null; }
-  if (processor){ try{ processor.disconnect(); }catch(e){} processor=null; }
-  if (audioCtx){ try{ audioCtx.close(); }catch(e){} audioCtx=null; }
-  if (localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream=null; }
-  stopTimer();
-  stopWave();
-  statusText.textContent = '⚫ Ended';
-  liveText.textContent = 'Ended';
-  liveDot.classList.remove('live');
+  if(ws){ws.close();ws=null;}
+  if(processor){processor.disconnect();processor=null;}
+  if(audioCtx){audioCtx.close();audioCtx=null;}
+  if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null;}
+  status.textContent="⚫ Stopped";
 }
 
-// UI event bindings
-startBtn.addEventListener('click', ()=> {
-  // If you want live connection: set SERVER_BASE and AGENT_ID above and uncomment.
-  // For safe demo by default we'll run the local scripted demo unless backend is configured.
-  if (SERVER_BASE && AGENT_ID) startRealtime();
-  else runLocalDemo();
-  startBtn.disabled = true;
-  stopBtn.disabled = false;
-  endBtn.disabled = false;
-});
+// ------------------- BUTTONS -------------------
 
-stopBtn.addEventListener('click', ()=> {
-  // pause demo or stop sending mic audio (without ending websocket)
-  if (ws && ws.readyState === 1) {
-    // ideally send a "stop" command to backend or pause sending audio
-    // but here we simply close mic stream
-    if (localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream=null; }
-    statusText.textContent = '🟡 Paused (audio stopped)';
-    liveText.textContent = 'Paused';
-    stopTimer();
-    stopWave();
-  } else {
-    // local demo
-    clearInterval(demoInterval);
-    statusText.textContent = '🟡 Demo paused';
-    liveText.textContent = 'Paused';
-    stopTimer();
-    stopWave();
-  }
-});
+startBtn.onclick=()=>{
+  if(pausedTime){ resumeCountdown(); }
+  else { startCountdown(); }
+  startRealtime();
+  startBtn.disabled=true;
+};
 
-endBtn.addEventListener('click', ()=> {
+stopBtn.onclick=()=>{
   stopAll();
-  startBtn.disabled = false;
-  stopBtn.disabled = true;
-  endBtn.disabled = true;
-});
+  pauseCountdown();   // stop at exact time
+  startBtn.disabled=false;
+};
 
-muteBtn.addEventListener('click', ()=> {
-  if (!localStream) return;
-  const tracks = localStream.getAudioTracks();
-  if (!tracks.length) return;
-  const muted = !tracks[0].enabled;
-  tracks.forEach(t => t.enabled = muted ? false : true);
-  muteBtn.textContent = muted ? '🔈 Unmute' : '🔇 Mute';
-});
+endBtn.onclick=()=>{
+  stopAll();
+  if(countdown) clearInterval(countdown);
+  countdown=null;
+  pausedTime=null;
+  endTime=null;
+  localStorage.removeItem("state");
+  timeLeft.textContent="00:00:00";
+  startBtn.disabled=false;
+};
 
-// init UI state
-stopBtn.disabled = true;
-endBtn.disabled = true;
-updateRemaining();
-stopWave(); // start stopped visually
+muteBtn.onclick=()=>{
+  if(localStream) localStream.getAudioTracks().forEach(t=>t.enabled=!t.enabled);
+};
 </script>
+
+<!-- ================= FEATURES & FAQ SECTION ================= -->
+<section class="features-faq">
+  <div class="container">
+    <!-- Heading -->
+    <div class="section-heading">
+      <h2>Why Choose Our AI Voice Agent?</h2>
+      <p>
+        Powered by <span class="highlight">Retell AI</span> – the most advanced real-time conversational AI.  
+        Here’s what sets us apart:
+      </p>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="icon">⚡</div>
+        <h3>Real-Time Conversations</h3>
+        <p>Instant responses with <span class="highlight">human-like speed</span> and accuracy.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🌍</div>
+        <h3>Multilingual Support</h3>
+        <p>Communicate in multiple languages fluently for <span class="highlight">global reach</span>.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🔗</div>
+        <h3>Seamless Integrations</h3>
+        <p>Connect with your CRM, website, or apps effortlessly.</p>
+      </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq">
+      <h3 class="faq-heading">Frequently Asked Questions</h3>
+      <div class="faq-item">
+        <button class="faq-question">How does Retell AI voice agent work?<span>+</span></button>
+        <div class="faq-answer">
+          The AI listens in real-time, processes queries instantly, and responds naturally — just like a human agent.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">Can it handle multiple calls at once?<span>+</span></button>
+        <div class="faq-answer">
+          Yes, the system scales effortlessly — handling thousands of conversations simultaneously.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">Do I need coding knowledge to use it?<span>+</span></button>
+        <div class="faq-answer">
+          No — everything is plug-and-play. Simply connect your business, and our AI takes care of the rest.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CSS STYLE ================= -->
+<style>
+.features-faq {
+  background: linear-gradient(135deg, #0d0d0d, #111, #0b2e0b);
+  color: #fff;
+  padding: 80px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+.features-faq::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(0,255,128,0.15) 0%, transparent 70%);
+  animation: glow 6s infinite alternate;
+}
+@keyframes glow {
+  from { transform: scale(1); opacity: 0.6; }
+  to { transform: scale(1.2); opacity: 0.3; }
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.section-heading {
+  text-align: center;
+  margin-bottom: 50px;
+}
+.section-heading h2 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #00ff88;
+  margin-bottom: 15px;
+  text-shadow: 0 0 10px rgba(0,255,136,0.5);
+  animation: pulse 2s infinite;
+}
+.section-heading p {
+  font-size: 1.1rem;
+  color: #bbb;
+}
+.highlight {
+  color: #00ff88;
+  font-weight: bold;
+}
+
+@keyframes pulse {
+  0%, 100% { text-shadow: 0 0 8px rgba(0,255,136,0.7); }
+  50% { text-shadow: 0 0 20px rgba(0,255,136,1); }
+}
+
+/* Features Grid */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+}
+.feature-card {
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: 18px;
+  padding: 30px;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.15);
+}
+.feature-card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 0 25px rgba(0, 255, 136, 0.4);
+}
+.feature-card .icon {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  color: #00ff88;
+  animation: float 3s ease-in-out infinite;
+}
+.feature-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: #fff;
+}
+.feature-card p {
+  font-size: 1rem;
+  color: #aaa;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* FAQ */
+.faq {
+  margin-top: 70px;
+}
+.faq-heading {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #00ff88;
+}
+.faq-item {
+  background: rgba(20,20,20,0.8);
+  border: 1px solid rgba(0,255,136,0.2);
+  margin-bottom: 15px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.faq-question {
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 1.1rem;
+  padding: 18px 20px;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+.faq-question:hover {
+  background: rgba(0,255,136,0.1);
+}
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 20px;
+  color: #bbb;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  transition: max-height 0.4s ease, padding 0.3s ease;
+}
+.faq-item.active .faq-answer {
+  max-height: 200px;
+  padding: 15px 20px 20px;
+}
+.faq-item.active .faq-question span {
+  transform: rotate(45deg);
+}
+.faq-question span {
+  transition: transform 0.3s;
+  color: #00ff88;
+}
+</style>
+
+<!-- ================= FAQ JS ================= -->
+<script>
+  const faqs = document.querySelectorAll('.faq-item');
+  faqs.forEach(faq => {
+    faq.querySelector('.faq-question').addEventListener('click', () => {
+      faq.classList.toggle('active');
+    });
+  });
+</script>
+<!-- ================= END FEATURES & FAQ SECTION ================= -->
+
 </body>
 </html>
